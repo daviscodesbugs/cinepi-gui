@@ -1,7 +1,7 @@
 #include "Application.hpp"
 #include "Page.hpp"
 
-#define DISPLAY_WIDTH 1280
+#define DISPLAY_WIDTH 720
 #define DISPLAY_HEIGHT 720
 
 int main()
@@ -32,6 +32,25 @@ int main()
             }
             else if (event.type == SDL_WINDOWEVENT && event.window.event == SDL_WINDOWEVENT_CLOSE && event.window.windowID == SDL_GetWindowID(app.window)){
                 done = true;
+            }
+            else if (event.type == SDL_MOUSEBUTTONDOWN && event.button.button == SDL_BUTTON_LEFT) {
+                // Check if click is in the middle third of the screen
+                int x = event.button.x;
+                int y = event.button.y;
+                int screen_width = app.app_width;
+                int screen_height = app.app_height;
+                
+                // Define middle third region
+                int middle_start_x = screen_width / 3;
+                int middle_end_x = screen_width * 2 / 3;
+                int middle_start_y = screen_height / 3;
+                int middle_end_y = screen_height * 2 / 3;
+                
+                // Check if click is in middle region
+                if (x >= middle_start_x && x <= middle_end_x &&
+                    y >= middle_start_y && y <= middle_end_y) {
+                    menus->show_menus = !menus->show_menus;
+                }
             }
         }
 

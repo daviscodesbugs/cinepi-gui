@@ -29,7 +29,7 @@ void Application::init(unsigned int w = 1280, unsigned int h = 720){
     // SDL_GL_SetAttribute(SDL_GL_FRAMEBUFFER_SRGB_CAPABLE, 1);
     SDL_WindowFlags window_flags = (SDL_WindowFlags)(SDL_WINDOW_OPENGL | SDL_WINDOW_ALLOW_HIGHDPI);
     // for fullscreen with no window decorations
-    // window_flags = (SDL_WindowFlags)(window_flags | SDL_WINDOW_FULLSCREEN | SDL_WINDOW_BORDERLESS | SDL_WINDOW_FULLSCREEN_DESKTOP);
+    window_flags = (SDL_WindowFlags)(window_flags | SDL_WINDOW_FULLSCREEN | SDL_WINDOW_BORDERLESS | SDL_WINDOW_FULLSCREEN_DESKTOP);
     window = SDL_CreateWindow("CINEPI", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, w, h, window_flags);
     gl_context = SDL_GL_CreateContext(window);
     SDL_GL_MakeCurrent(window, gl_context);

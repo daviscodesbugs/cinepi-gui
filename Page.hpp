@@ -38,13 +38,16 @@ class Menus : public Page
     public:
         Menus(Application& app) : 
             Page(app),
-            logo("cinepi-gui/assets/img/logo.png")
+            logo("cinepi-gui/assets/img/logo.png"),
+            show_menus(true)
             {
                 console = spdlog::stdout_color_mt("menus");
             }
         ~Menus() {}
 
         virtual void show() override;
+
+        bool show_menus;
 
     private:
 

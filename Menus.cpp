@@ -10,10 +10,28 @@ std::string floatToFormattedString(float value) {
     return oss.str();
 }
 
+bool checkMenuSpacing(const char* items[], int count, float spacing) {
+    ImGuiIO &io = ImGui::GetIO();
+    float total_width = 0;
+    
+    // Calculate total width needed for all items
+    for (int i = 0; i < count; i++) {
+        ImVec2 text_size = ImGui::CalcTextSize(items[i]);
+        total_width += text_size.x + spacing;
+    }
+    
+    // Add padding for menu borders and separators
+    total_width += 32.0f; // Approximate padding
+    
+    return total_width <= io.DisplaySize.x;
+}
+
 void Menus::show()
 {
-    menu_top();
-    menu_bottom();
+    if (show_menus) {
+        menu_top();
+        menu_bottom();
+    }
 }
 
 void Menus::menu_top()
@@ -22,8 +40,27 @@ void Menus::menu_top()
 
     FrameBuffer fb = app.buffers.getBuffer();
 
-    ImGui::PushStyleVar(ImGuiStyleVar_FramePadding,ImVec2(4.0f, 16.0f));
-    ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing,ImVec2(32.0f, 4.0f));
+    // Define menu items
+    const char* menu_items[] = {
+        floatToFormattedString(fb.framerate).c_str(),
+        "   100",
+        "   180°",
+        ICON_FA_COG,
+        "     ---",
+        "  5600k"
+    };
+    const int menu_count = sizeof(menu_items) / sizeof(menu_items[0]);
+
+    // Start with default spacing
+    float spacing = 16.0f;
+    
+    // If items don't fit, reduce spacing
+    while (!checkMenuSpacing(menu_items, menu_count, spacing) && spacing > 4.0f) {
+        spacing -= 4.0f;
+    }
+
+    ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(4.0f, 4.0f));
+    ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(spacing, 4.0f));
     {   
         ImGui::SetNextWindowSize(io.DisplaySize);
         ImGui::SetNextWindowPos(ImVec2(0, 0));
@@ -138,16 +175,23 @@ void Menus::menu_top()
             ImGui::Separator();
             if (ImGui::BeginMenu("  5600k"))
             {
-
                 ImGui::EndMenu();
             }
             ImGui::Separator();
 
-            draw_list->AddText(app.ui24, app.ui24->FontSize, ImVec2(180, 32), IM_COL32(100, 100, 100, 255), "FPS");
-            draw_list->AddText(app.ui24, app.ui24->FontSize, ImVec2(400, 32), IM_COL32(100, 100, 100, 255), "ISO");
-            draw_list->AddText(app.ui24, app.ui24->FontSize, ImVec2(580, 32), IM_COL32(100, 100, 100, 255), "SHT");
-            draw_list->AddText(app.ui24, app.ui24->FontSize, ImVec2(1005, 32), IM_COL32(100, 100, 100, 255), "IRIS");
-            draw_list->AddText(app.ui24, app.ui24->FontSize, ImVec2(1200, 32), IM_COL32(100, 100, 100, 255), "WB");
+            // Calculate positions for labels based on available space
+            float label_spacing = (io.DisplaySize.x - 200.0f) / 5.0f; // 200.0f for logo space
+            float current_x = 180.0f;
+
+            draw_list->AddText(app.ui24, app.ui24->FontSize, ImVec2(current_x, 32), IM_COL32(100, 100, 100, 255), "FPS");
+            current_x += label_spacing;
+            draw_list->AddText(app.ui24, app.ui24->FontSize, ImVec2(current_x, 32), IM_COL32(100, 100, 100, 255), "ISO");
+            current_x += label_spacing;
+            draw_list->AddText(app.ui24, app.ui24->FontSize, ImVec2(current_x, 32), IM_COL32(100, 100, 100, 255), "SHT");
+            current_x += label_spacing;
+            draw_list->AddText(app.ui24, app.ui24->FontSize, ImVec2(current_x, 32), IM_COL32(100, 100, 100, 255), "IRIS");
+            current_x += label_spacing;
+            draw_list->AddText(app.ui24, app.ui24->FontSize, ImVec2(current_x, 32), IM_COL32(100, 100, 100, 255), "WB");
 
             ImGui::EndMenuBar();   
         }
@@ -161,7 +205,7 @@ void Menus::menu_bottom()
 {
     ImGuiIO &io = ImGui::GetIO(); (void)io;
     ImGui::PushStyleVar(ImGuiStyleVar_FramePadding,ImVec2(4.0f, 16.0f));
-    ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing,ImVec2(32.0f, 4.0f));
+    ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing,ImVec2(16.0f, 4.0f));
     const ImGuiViewport *viewport = ImGui::GetMainViewport();
 
     // Set position to the bottom of the viewport
